@@ -1,16 +1,18 @@
 import sqlite3
 import sys
 
-from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QWidget
 
+from mainForm import Ui_MainWindow
+from addEditCoffeeForm import Ui_Form
 
-class MyWidget(QMainWindow):
+
+class MyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
-        self.con = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.con = sqlite3.connect("data/coffee.sqlite")
         self.pushButton.clicked.connect(self.update_table)
         self.addButton.clicked.connect(self.add_coffee)
         self.editButton.clicked.connect(self.edit_coffee)
@@ -29,24 +31,24 @@ class MyWidget(QMainWindow):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
 
     def add_coffee(self):
-        self.addForm = addEditCoffeeForm(self)
+        self.addForm = addEditCoffee(self)
         self.addForm.show()
         self.statusbar.showMessage('')
 
     def edit_coffee(self):
         items = self.tableWidget.selectedItems()
         if items:
-            self.editForm = addEditCoffeeForm(self, self.table[items[0].row()])
+            self.editForm = addEditCoffee(self, self.table[items[0].row()])
             self.editForm.show()
             self.statusbar.showMessage('')
         else:
             self.statusbar.showMessage('Ничего не выбрано')
 
 
-class addEditCoffeeForm(QWidget):
+class addEditCoffee(QWidget, Ui_Form):
     def __init__(self, parent, item=None):
         super().__init__()
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
         self.parent = parent
         if item is not None:
             self.item = item
